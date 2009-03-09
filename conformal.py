@@ -50,13 +50,6 @@ def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
         gimp.tile_cache_ntiles(2 * (width + 63) / 64)
 
         dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
-	#desta = drawables[0].get_pixel_rgn(0, 0, width, height, TRUE, FALSE)
-	#destm = drawables[1].get_pixel_rgn(0, 0, width, height, TRUE, FALSE)
-#	src_rgn = drawable.get_pixel_rgn(0, 0, width, height, FALSE, FALSE)
-#        bg_colour = gimp.get_background()
-#	bg_pixel = struct.pack('BBB', bg_colour[0], bg_colour[1], bg_colour[2])
-#	if drawable.has_alpha:
-#        	bg_pixel=bg_pixel + chr(0)
 	gradient = gimp.context_get_gradient()
         progress = 0
         max_progress = width * height
@@ -64,20 +57,17 @@ def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
 	sx = (width-1.0)/(xr-xl)
 	sy = (height-1.0)/(yt-yb)
 	w = complex(0.0)
-	z = complex(0.0) # typedef
+	z = complex(0.0)
 	cx, cy = 0, 0
 	ml2 = 2.0*math.log(2) # no need to do this 500*500 times...
 	compiled=compile(code, "compiled code", "exec", 0, 1)
 
 	for row in range(0, height):
-        	# top_p = ''
 		args = ()
 		mods = ()
 		sqrs = ()
-	# could use map or coll. instead of for, but it's no faster
         	for col in range(0, width):
-		# z = complex(col/sx + xl, yt - row/sy) # 3s
-			z = col/sx + xl + 1j*( yt - row/sy) # only 1s
+			z = col/sx + xl + 1j*( yt - row/sy)
 			exec(compiled)	
 			arg = math.atan2(w.imag, w.real)
 			if arg<0.0:
@@ -107,7 +97,6 @@ def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
 
         for drawable in drawables:
         	drawable.flush()
-        	#drawable.merge_shadow(TRUE)
         	drawable.update(0,0,width,height)	
 	pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
 	pdb.plug_in_vinvert(image,drawables[2])
