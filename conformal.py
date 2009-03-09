@@ -32,8 +32,9 @@ except ImportError:
 #import psyco
 #psyco.full()
 
-def python_conformal(code, xl, xr, yt, yb, grid, width, height):
-	image = gimp.Image(width, height, RGB)
+def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
+	width = image.width
+	height = image.height
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 	              gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
 		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, 10, DARKEN_ONLY_MODE)]
@@ -42,12 +43,13 @@ def python_conformal(code, xl, xr, yt, yb, grid, width, height):
         for drawable in drawables:
 		image.add_layer(drawable, l)
 		l = -1
+	image.remove_layer(indrawable)
 
         bpp = drawables[0].bpp
 
         gimp.tile_cache_ntiles(2 * (width + 63) / 64)
 
-        dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, TRUE, FALSE) for drawable in drawables ]
+        dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
 	#desta = drawables[0].get_pixel_rgn(0, 0, width, height, TRUE, FALSE)
 	#destm = drawables[1].get_pixel_rgn(0, 0, width, height, TRUE, FALSE)
 #	src_rgn = drawable.get_pixel_rgn(0, 0, width, height, FALSE, FALSE)
@@ -111,7 +113,6 @@ def python_conformal(code, xl, xr, yt, yb, grid, width, height):
 	pdb.plug_in_vinvert(image,drawables[2])
 
 	image.enable_undo()
-	gimp.Display(image)
 
 
 
@@ -122,7 +123,7 @@ register(
         "Michael J Gruber",
         "Michael J Gruber",
         "2005",
-        "<Toolbox>/Xtns/Python-Fu/_Conformal",
+        "<Image>/Filters/Render/_Conformal ...",
         "RGB*, GRAY*, INDEXED*",
         [
 		(PF_TEXT, "code", "code", "w=z"),
@@ -131,8 +132,6 @@ register(
                 (PF_FLOAT, "yt", "y top", 1.0),
 		(PF_FLOAT, "yb", "y bottom", -1.0),
 		(PF_FLOAT, "grid", "grid", 1.0),
-		(PF_INT, "width", "width", 256),
-		(PF_INT, "height", "height", 256)
         ],
         [],
         python_conformal)
