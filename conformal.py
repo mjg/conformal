@@ -77,7 +77,8 @@ def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
 			except (OverflowError, ValueError):
 				mod=0.0
 			mods = mods + ( mod ,)
-			sqrs = sqrs + (bpp-1)*( 255*(((int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)) % 2) ,) + (255, )
+			sqr = (int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)
+			sqrs = sqrs + (bpp-1)*( 255*(sqr % 2) ,) + (255, )
 
 	        samples = gimp.gradient_get_custom_samples(gradient, args)
 		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
