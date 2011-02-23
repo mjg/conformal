@@ -74,7 +74,7 @@ def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
 			args = args + ( arg/(2*math.pi) ,)
 			try:
 				mod = ( math.log(w.imag**2+w.real**2)/ml2 ) % 1.0
-			except OverflowError:
+			except (OverflowError, ValueError):
 				mod=0.0
 			mods = mods + ( mod ,)
 			sqrs = sqrs + (bpp-1)*( 255*(((int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)) % 2) ,) + (255, )
