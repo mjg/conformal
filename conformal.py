@@ -31,13 +31,8 @@ except ImportError:
 #import psyco
 #psyco.full()
 
-def conformal(image, indrawable, code, xl, xr, yt, yb, grid):
-	print image,indrawable
-	if image is None:
-		print "interactive"
-		return
-	width = image.width
-	height = image.height
+def conformal(width, height, code, xl, xr, yt, yb, grid):
+	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 	              gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
 		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, 10, DARKEN_ONLY_MODE)]
@@ -46,7 +41,6 @@ def conformal(image, indrawable, code, xl, xr, yt, yb, grid):
         for drawable in drawables:
 		image.add_layer(drawable, l)
 		l = -1
-	image.remove_layer(indrawable)
 
         bpp = drawables[0].bpp
 
@@ -109,7 +103,8 @@ def conformal(image, indrawable, code, xl, xr, yt, yb, grid):
 	pdb.plug_in_vinvert(image,drawables[2])
 
 	image.enable_undo()
-
+	gimp.Display(image)
+	gimp.displays_flush
 
 
 register(
@@ -118,10 +113,12 @@ register(
         "Colour representation of a conformal map",
         "Michael J Gruber",
         "Michael J Gruber",
-        "2005",
-        "<Image>/Filters/Render/_Conformal ...",
-        "RGB*, GRAY*, INDEXED*",
+        "2011",
+        "<Toolbox>/File/Create/_Conformal ...",
+        "",
         [
+		(PF_INT, "width", "width", 512),
+		(PF_INT, "height", "height", 512),
 		(PF_TEXT, "code", "code", "w=z"),
                 (PF_FLOAT, "xl", "x left", -1.0),
                 (PF_FLOAT, "xr", "x right", 1.0),
