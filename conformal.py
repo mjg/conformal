@@ -31,7 +31,11 @@ except ImportError:
 #import psyco
 #psyco.full()
 
-def python_conformal(image, indrawable, code, xl, xr, yt, yb, grid):
+def conformal(image, indrawable, code, xl, xr, yt, yb, grid):
+	print image,indrawable
+	if image is None:
+		print "interactive"
+		return
 	width = image.width
 	height = image.height
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
@@ -126,6 +130,6 @@ register(
 		(PF_FLOAT, "grid", "grid", 1.0),
         ],
         [],
-        python_conformal)
+        conformal)
 
 main()
