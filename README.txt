@@ -2,7 +2,7 @@ conformal.py
 ============
 :Author: Michael J. Gruber
 :Email:  conformal@drmicha.warpmail.net
-:Revision: 0.1
+:Revision: 0.2
 
 == Introduction
 `conformal.py` is a plugin-in for http://gimp.org[The Gimp] which allows
@@ -23,15 +23,15 @@ that it is executable (`chmod +x conformal.py`).
 
 === System wide
 Copy `conformal.py` to the `plug-ins` subdirectory of your system Gimp
-directory, usually `/usr/lib/gimp/2.0/plg-ins/` or (similar) on Linux,
+directory, usually `/usr/lib/gimp/2.*/plug-ins/` or (similar) on Linux,
 and make sure that it is executable (`chmod a+rx conformal.py`).
 
 === Usage
-After starting The Gimp, you find the conformal plug-in in the `Render`
-submenu of the `Filters` menu. Just like any other render filter it
-operates on the current image and takes its dimensions as input. After
-choosing the plug-in from the submenu you can adjust other parameters:
+After starting The Gimp, you find the conformal plug-in in the `Create`
+submenu of the `File` menu. From the dialogue, you can adjust these parameters:
 
+`width`, `height`::
+	The dimensions of the new image.
 `code`::
 	The python code which is executed for every single pixel of the
 	image. The code can use the value of the complex number `z`
@@ -43,9 +43,10 @@ choosing the plug-in from the submenu you can adjust other parameters:
 	The range of y-values (imaginary parts) which is mapped to the vertical image axis.
 `grid`::
 	The spacing of the generated coordinate grid.
+`gradient`::
+	The gradient representing the argument of the complex number.
 
-As an additional input, the currently active gradient will be used. The
-plug-in then replaces the currently active layer with three new layers:
+The plugin-in then creates a new image with three layers:
 
 `Grid`::
 	This layer paints the conformally transformed coordinate grid.
@@ -57,7 +58,7 @@ plug-in then replaces the currently active layer with three new layers:
 	is used as an index into the default white-black gradient.
 	 
 `Argument`::
-	This layer is coloured using the value of the the active gradient
+	This layer is coloured using the value of the gradient
 	at an index corresponding to `arg w`.
 
 The two topmost layers have transparency and layer mode set
