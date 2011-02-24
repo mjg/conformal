@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.2.5" />
+<meta name="generator" content="AsciiDoc 8.4.5" />
+<title>conformal.py</title>
 <style type="text/css">
 /* Debug borders */
 p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
@@ -26,10 +27,12 @@ a:visited {
 
 em {
   font-style: italic;
+  color: navy;
 }
 
 strong {
   font-weight: bold;
+  color: #083194;
 }
 
 tt {
@@ -71,6 +74,10 @@ p {
   margin-bottom: 0.5em;
 }
 
+ul, ol, li > p {
+  margin-top: 0;
+}
+
 pre {
   padding: 0;
   margin: 0;
@@ -84,7 +91,7 @@ span#author {
 }
 span#email {
 }
-span#revision {
+span#revnumber, span#revdate, span#revremark {
   font-family: sans-serif;
 }
 
@@ -104,11 +111,13 @@ div#footer-badges {
   padding-bottom: 0.5em;
 }
 
-div#preamble,
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
-  margin-right: 10%;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
@@ -123,6 +132,7 @@ div.content { /* Block element content. */
 
 /* Block element titles. */
 div.title, caption.title {
+  color: #527bbd;
   font-family: sans-serif;
   font-weight: bold;
   text-align: left;
@@ -149,22 +159,33 @@ div.sidebarblock > div.content {
   padding: 0.5em;
 }
 
-div.listingblock {
-  margin-right: 0%;
-}
 div.listingblock > div.content {
   border: 1px solid silver;
   background: #f4f4f4;
   padding: 0.5em;
 }
 
-div.quoteblock > div.content {
+div.quoteblock {
   padding-left: 2.0em;
+  margin-right: 10%;
 }
-
-div.attribution {
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
   text-align: right;
 }
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
 div.verseblock + div.attribution {
   text-align: left;
 }
@@ -187,13 +208,9 @@ div.exampleblock > div.content {
   padding: 0.5em;
 }
 
-div.verseblock div.content {
-  white-space: pre;
-}
-
 div.imageblock div.content { padding-left: 0; }
-div.imageblock img { border: 1px solid silver; }
 span.image img { border-style: none; }
+a.image:visited { color: white; }
 
 dl {
   margin-top: 0.8em;
@@ -202,17 +219,37 @@ dl {
 dt {
   margin-top: 0.5em;
   margin-bottom: 0;
-  font-style: italic;
+  font-style: normal;
+  color: navy;
 }
 dd > *:first-child {
-  margin-top: 0;
+  margin-top: 0.1em;
 }
 
 ul, ol {
     list-style-position: outside;
 }
-div.olist2 ol {
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
   list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 div.tableblock > table {
@@ -225,21 +262,52 @@ thead {
 tfoot {
   font-weight: bold;
 }
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
 
-div.hlist {
+
+div.hdlist {
   margin-top: 0.8em;
   margin-bottom: 0.8em;
 }
-div.hlist td {
-  padding-bottom: 5px;
+div.hdlist tr {
+  padding-bottom: 15px;
 }
-td.hlist1 {
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
   vertical-align: top;
-  font-style: italic;
+  font-style: normal;
   padding-right: 0.8em;
+  color: navy;
 }
-td.hlist2 {
+td.hdlist2 {
   vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
 }
 
 @media print {
@@ -279,6 +347,7 @@ div.sidebar-content {
   padding: 0.5em;
 }
 div.sidebar-title, div.image-title {
+  color: #527bbd;
   font-family: sans-serif;
   font-weight: bold;
   margin-top: 0.0em;
@@ -291,8 +360,17 @@ div.listingblock div.content {
   padding: 0.5em;
 }
 
-div.quoteblock-content {
-  padding-left: 2.0em;
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
 }
 
 div.exampleblock-content {
@@ -303,44 +381,49 @@ div.exampleblock-content {
 /* IE6 sets dynamically generated links as visited. */
 div#toc a:visited { color: blue; }
 </style>
-<title>conformal.py</title>
 </head>
 <body>
 <div id="header">
 <h1>conformal.py</h1>
 <span id="author">Michael J. Gruber</span><br />
 <span id="email"><tt>&lt;<a href="mailto:conformal@drmicha.warpmail.net">conformal@drmicha.warpmail.net</a>&gt;</tt></span><br />
-<span id="revision">version 0.1</span>
+<span id="revnumber">version 0.2</span>
 </div>
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
-<div class="para"><p><tt>conformal.py</tt> is a plugin-in for <a href="http://gimp.org">The Gimp</a> which allows
+<div class="paragraph"><p><tt>conformal.py</tt> is a plugin-in for <a href="http://gimp.org">The Gimp</a> which allows
 visualisation of conformal maps.</p></div>
 </div>
 <h2 id="_requirements">Requirements</h2>
 <div class="sectionbody">
-<div class="para"><p>You need <tt>gimp</tt> and the python scripting extension to Gimp. It is
+<div class="paragraph"><p>You need <tt>gimp</tt> and the python scripting extension to Gimp. It is
 included in newer versions of Gimp, before it was available in packages
 named <tt>gimp-python</tt> or similar.</p></div>
 </div>
 <h2 id="_installation">Installation</h2>
 <div class="sectionbody">
-<div class="para"><p>You can install <tt>conformal.py</tt> as a local user or system wide:</p></div>
+<div class="paragraph"><p>You can install <tt>conformal.py</tt> as a local user or system wide:</p></div>
 <h3 id="_local_user">Local User</h3><div style="clear:left"></div>
-<div class="para"><p>Copy <tt>conformal.py</tt> to the <tt>plug-ins</tt> subdirectory of your Gimp
+<div class="paragraph"><p>Copy <tt>conformal.py</tt> to the <tt>plug-ins</tt> subdirectory of your Gimp
 directory, usually <tt>$HOME/.gimp-2.*/plug-ins/</tt> on Linux, and make sure
 that it is executable (<tt>chmod +x conformal.py</tt>).</p></div>
 <h3 id="_system_wide">System wide</h3><div style="clear:left"></div>
-<div class="para"><p>Copy <tt>conformal.py</tt> to the <tt>plug-ins</tt> subdirectory of your system Gimp
-directory, usually <tt>/usr/lib/gimp/2.0/plg-ins/</tt> or (similar) on Linux,
+<div class="paragraph"><p>Copy <tt>conformal.py</tt> to the <tt>plug-ins</tt> subdirectory of your system Gimp
+directory, usually <tt>/usr/lib/gimp/2.*/plug-ins/</tt> or (similar) on Linux,
 and make sure that it is executable (<tt>chmod a+rx conformal.py</tt>).</p></div>
 <h3 id="_usage">Usage</h3><div style="clear:left"></div>
-<div class="para"><p>After starting The Gimp, you find the conformal plug-in in the <tt>Render</tt>
-submenu of the <tt>Filters</tt> menu. Just like any other render filter it
-operates on the current image and takes its dimensions as input. After
-choosing the plug-in from the submenu you can adjust other parameters:</p></div>
-<div class="vlist"><dl>
-<dt>
+<div class="paragraph"><p>After starting The Gimp, you find the conformal plug-in in the <tt>Create</tt>
+submenu of the <tt>File</tt> menu. From the dialogue, you can adjust these parameters:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>width</tt>, <tt>height</tt>
+</dt>
+<dd>
+<p>
+        The dimensions of the new image.
+</p>
+</dd>
+<dt class="hdlist1">
 <tt>code</tt>
 </dt>
 <dd>
@@ -351,7 +434,7 @@ choosing the plug-in from the submenu you can adjust other parameters:</p></div>
         to <tt>w</tt> which will be considered the (mapping) image of <tt>z</tt>.
 </p>
 </dd>
-<dt>
+<dt class="hdlist1">
 <tt>x left</tt>, <tt>x-right</tt>
 </dt>
 <dd>
@@ -359,7 +442,7 @@ choosing the plug-in from the submenu you can adjust other parameters:</p></div>
         The range of x-values (real parts) which is mapped to the horizontal image axis.
 </p>
 </dd>
-<dt>
+<dt class="hdlist1">
 <tt>y top</tt>, <tt>y bottom</tt>
 </dt>
 <dd>
@@ -367,7 +450,7 @@ choosing the plug-in from the submenu you can adjust other parameters:</p></div>
         The range of y-values (imaginary parts) which is mapped to the vertical image axis.
 </p>
 </dd>
-<dt>
+<dt class="hdlist1">
 <tt>grid</tt>
 </dt>
 <dd>
@@ -375,11 +458,18 @@ choosing the plug-in from the submenu you can adjust other parameters:</p></div>
         The spacing of the generated coordinate grid.
 </p>
 </dd>
+<dt class="hdlist1">
+<tt>gradient</tt>
+</dt>
+<dd>
+<p>
+        The gradient representing the argument of the complex number.
+</p>
+</dd>
 </dl></div>
-<div class="para"><p>As an additional input, the currently active gradient will be used. The
-plug-in then replaces the currently active layer with three new layers:</p></div>
-<div class="vlist"><dl>
-<dt>
+<div class="paragraph"><p>The plugin-in then creates a new image with three layers:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
 <tt>Grid</tt>
 </dt>
 <dd>
@@ -387,7 +477,7 @@ plug-in then replaces the currently active layer with three new layers:</p></div
         This layer paints the conformally transformed coordinate grid.
 </p>
 </dd>
-<dt>
+<dt class="hdlist1">
 <tt>Log. modulus</tt>
 </dt>
 <dd>
@@ -398,30 +488,30 @@ plug-in then replaces the currently active layer with three new layers:</p></div
         is used as an index into the default white-black gradient.
 </p>
 </dd>
-<dt>
+<dt class="hdlist1">
 <tt>Argument</tt>
 </dt>
 <dd>
 <p>
-        This layer is coloured using the value of the the active gradient
+        This layer is coloured using the value of the gradient
         at an index corresponding to <tt>arg w</tt>.
 </p>
 </dd>
 </dl></div>
-<div class="para"><p>The two topmost layers have transparency and layer mode set
+<div class="paragraph"><p>The two topmost layers have transparency and layer mode set
 appropriately, but feel free to experiment with these, as well as
 turning some layers off, depending on your goal: produce instructive
 illustrations, or simply beautiful pictures!</p></div>
 </div>
 <h2 id="_license">License</h2>
 <div class="sectionbody">
-<div class="para"><p><tt>conformal.py</tt> is copy righted by Michael J. Gruber and is available
+<div class="paragraph"><p><tt>conformal.py</tt> is copy righted by Michael J. Gruber and is available
 under the GNU General Public License Version 2.</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.1<br />
-Last updated 2009-03-09 16:15:11 CEST
+Version 0.2<br />
+Last updated 2011-02-24 17:33:35 CEST
 </div>
 </div>
 </body>
