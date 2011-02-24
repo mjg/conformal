@@ -31,7 +31,7 @@ except ImportError:
 #import psyco
 #psyco.full()
 
-def conformal(width, height, code, xl, xr, yt, yb, grid):
+def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 	              gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
@@ -47,7 +47,6 @@ def conformal(width, height, code, xl, xr, yt, yb, grid):
         gimp.tile_cache_ntiles(2 * (width + 63) / 64)
 
         dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
-	gradient = gimp.context_get_gradient()
         progress = 0
         max_progress = width * height
         gimp.progress_init("Conformally Mapping...")
@@ -125,6 +124,7 @@ register(
                 (PF_FLOAT, "yt", "y top", 1.0),
 		(PF_FLOAT, "yb", "y bottom", -1.0),
 		(PF_FLOAT, "grid", "grid", 1.0),
+		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
         ],
         [],
         conformal)
