@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #   conformal.py
-#   Copyright (C) 2006-2009  Michael J. Gruber <conformal@drmicha.warpmail.net>
+#   Copyright (C) 2006-2011  Michael J. Gruber <conformal@drmicha.warpmail.net>
 #
 #    This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+confversion = "0.3"
 
 import math, cmath
 from math import *
@@ -109,7 +111,20 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 		drawable.update(0,0,width,height)	
 	pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
 	pdb.plug_in_vinvert(image,drawables[2])
-
+	if image.parasite_find("gimp-comment"):
+		image.parasite.detach("gimp-comment")
+	image.attach_new_parasite("gimp-comment", 0, """# conformal %s
+code = \"\"\"%s
+\"\"\"
+xl = %f
+xr = %f
+yt = %f
+yb = %f
+grid = %f
+gradient = "%s"
+width = %d
+height = %d
+""" % (confversion, code, xl, xr, yt, yb, grid, gradient, width, height))
 	if filename is None:
 		image.enable_undo()
 		gimp.Display(image)
