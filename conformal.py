@@ -31,7 +31,15 @@ except ImportError:
 #import psyco
 #psyco.full()
 
+def conformal_batch(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
+	conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename)
+
+
 def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
+	conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, None)
+
+
+def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
@@ -93,7 +101,8 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 		dest_rgns[2][0:width, row] = top_p.tostring()
 	
 		progress = progress + width 
-		gimp.progress_update(float(progress) / max_progress)
+		if filename is None:
+			gimp.progress_update(float(progress) / max_progress)
 
 	for drawable in drawables:
 		drawable.flush()
@@ -101,13 +110,44 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 	pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
 	pdb.plug_in_vinvert(image,drawables[2])
 
-	image.enable_undo()
-	gimp.Display(image)
-	gimp.displays_flush
+	if filename is None:
+		image.enable_undo()
+		gimp.Display(image)
+		gimp.displays_flush
+	else:
+		if filename.find('.xcf') > 0:
+			pdb.gimp_xcf_save(1, image, drawables[0], filename, filename)
+		else:
+			flat_layer = pdb.gimp_image_flatten(image)
+			pdb.gimp_file_save(image, flat_layer, filename, filename)
 
 
 register(
-	"python_fu_conformal",
+	"conformal_batch",
+	"Colour representation of a conformal map",
+	"Colour representation of a conformal map",
+	"Michael J Gruber",
+	"Michael J Gruber",
+	"2011",
+	"",
+	"",
+	[
+		(PF_INT, "width", "width", 512),
+		(PF_INT, "height", "height", 512),
+		(PF_TEXT, "code", "code", "w=z"),
+		(PF_FLOAT, "xl", "x left", -1.0),
+		(PF_FLOAT, "xr", "x right", 1.0),
+		(PF_FLOAT, "yt", "y top", 1.0),
+		(PF_FLOAT, "yb", "y bottom", -1.0),
+		(PF_FLOAT, "grid", "grid", 1.0),
+		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
+		(PF_FILE, "file", "file", "out.xcf.bz2"),
+	],
+	[],
+	conformal_batch)
+
+register(
+	"conformal",
 	"Colour representation of a conformal map",
 	"Colour representation of a conformal map",
 	"Michael J Gruber",
