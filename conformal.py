@@ -34,22 +34,22 @@ except ImportError:
 def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
-	              gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
+		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
 		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, 10, DARKEN_ONLY_MODE)]
-        image.disable_undo()
+	image.disable_undo()
 	l = 1
-        for drawable in drawables:
+	for drawable in drawables:
 		image.add_layer(drawable, l)
 		l = -1
 
-        bpp = drawables[0].bpp
+	bpp = drawables[0].bpp
 
-        gimp.tile_cache_ntiles(2 * (width + 63) / 64)
+	gimp.tile_cache_ntiles(2 * (width + 63) / 64)
 
-        dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
-        progress = 0
-        max_progress = width * height
-        gimp.progress_init("Conformally Mapping...")
+	dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
+	progress = 0
+	max_progress = width * height
+	gimp.progress_init("Conformally Mapping...")
 	sx = (width-1.0)/(xr-xl)
 	sy = (height-1.0)/(yt-yb)
 	w = complex(0.0)
@@ -62,7 +62,7 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 		args = ()
 		mods = ()
 		sqrs = ()
-        	for col in range(0, width):
+		for col in range(0, width):
 			z = col/sx + xl + 1j*( yt - row/sy)
 			exec(compiled)	
 			arg = math.atan2(w.imag, w.real)
@@ -80,10 +80,10 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 				sqr = 0
 			sqrs = sqrs + (bpp-1)*( 255*(sqr % 2) ,) + (255, )
 
-	        samples = gimp.gradient_get_custom_samples(gradient, args)
+		samples = gimp.gradient_get_custom_samples(gradient, args)
 		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
 
-	        dest_rgns[0][0:width, row] = top_p.tostring()
+		dest_rgns[0][0:width, row] = top_p.tostring()
 	
 		samples = gimp.gradient_get_custom_samples("Default", mods)
 		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
@@ -92,12 +92,12 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 		top_p = array("B", sqrs )
 		dest_rgns[2][0:width, row] = top_p.tostring()
 	
-        	progress = progress + width 
-        	gimp.progress_update(float(progress) / max_progress)
+		progress = progress + width 
+		gimp.progress_update(float(progress) / max_progress)
 
-        for drawable in drawables:
-        	drawable.flush()
-        	drawable.update(0,0,width,height)	
+	for drawable in drawables:
+		drawable.flush()
+		drawable.update(0,0,width,height)	
 	pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
 	pdb.plug_in_vinvert(image,drawables[2])
 
@@ -107,26 +107,26 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 
 
 register(
-        "python_fu_conformal",
-        "Colour representation of a conformal map",
-        "Colour representation of a conformal map",
-        "Michael J Gruber",
-        "Michael J Gruber",
-        "2011",
-        "<Toolbox>/File/Create/_Conformal ...",
-        "",
-        [
+	"python_fu_conformal",
+	"Colour representation of a conformal map",
+	"Colour representation of a conformal map",
+	"Michael J Gruber",
+	"Michael J Gruber",
+	"2011",
+	"<Toolbox>/File/Create/_Conformal ...",
+	"",
+	[
 		(PF_INT, "width", "width", 512),
 		(PF_INT, "height", "height", 512),
 		(PF_TEXT, "code", "code", "w=z"),
-                (PF_FLOAT, "xl", "x left", -1.0),
-                (PF_FLOAT, "xr", "x right", 1.0),
-                (PF_FLOAT, "yt", "y top", 1.0),
+		(PF_FLOAT, "xl", "x left", -1.0),
+		(PF_FLOAT, "xr", "x right", 1.0),
+		(PF_FLOAT, "yt", "y top", 1.0),
 		(PF_FLOAT, "yb", "y bottom", -1.0),
 		(PF_FLOAT, "grid", "grid", 1.0),
 		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
-        ],
-        [],
-        conformal)
+	],
+	[],
+	conformal)
 
 main()
