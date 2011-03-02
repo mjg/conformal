@@ -85,19 +85,33 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 				exec(compiled)
 			except (OverflowError, ValueError):
 				w = 0.0
-			arg = math.atan2(w.imag, w.real)
-			if arg<0.0:
-				arg = arg + 2*math.pi
+			if isnan(w) or isinf(w):
+				w = 0.0
+
+			try:
+				arg = math.atan2(w.imag, w.real)
+				if isnan(arg) or isinf(arg):
+					arg = 0.0
+				elif arg < 0.0:
+					arg = arg + 2*math.pi
+			except (OverflowError, ValueError):
+				arg = 0.0
 			args = args + ( arg/(2*math.pi) ,)
+
 			try:
 				mod = ( math.log(w.imag**2+w.real**2)/ml2 ) % 1.0
+				if isnan(mod) or isinf(mod):
+					mod = 0.0
 			except (OverflowError, ValueError):
-				mod=0.0
+				mod = 0.0
 			mods = mods + ( mod ,)
+
 			try:
 				sqr = (int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)
+				if isnan(sqr) or isinf(sqr):
+					sqr = 0.0
 			except (OverflowError, ValueError):
-				sqr = 0
+				sqr = 0.0
 			sqrs = sqrs + (bpp-1)*( 255*(sqr % 2) ,) + (255, )
 
 		samples = gimp.gradient_get_custom_samples(gradient, args)
@@ -124,7 +138,8 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 	if image.parasite_find("gimp-comment"):
 		image.parasite.detach("gimp-comment")
 	image.attach_new_parasite("gimp-comment", PARASITE_PERSISTENT, """# conformal %s
-code = \"\"\"%s
+code = \"\"\"
+%s
 \"\"\"
 xl = %f
 xr = %f
