@@ -18,20 +18,26 @@
 
 confversion = "0.3"
 
+# allow access through module and without
 import math, cmath
 from math import *
 from cmath import *
-# allow access through module and without
+
 from array import array
 from gimpfu import *
+
+# try importing typical math modules
 try:
 	from fpconst import *
 	import scipy.special
 except ImportError:
 	pass
 
-#import psyco
-#psyco.full()
+try:
+	import mpmath
+except ImportError:
+	pass
+
 
 def conformal_batch(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
 	conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename)
