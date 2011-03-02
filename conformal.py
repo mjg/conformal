@@ -59,7 +59,8 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 	dest_rgns = [ drawable.get_pixel_rgn(0, 0, width, height, True, False) for drawable in drawables ]
 	progress = 0
 	max_progress = width * height
-	gimp.progress_init("Conformally Mapping...")
+	if filename is None:
+		gimp.progress_init("Conformally Mapping...")
 	sx = (width-1.0)/(xr-xl)
 	sy = (height-1.0)/(yt-yb)
 	w = complex(0.0)
