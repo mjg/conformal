@@ -75,7 +75,10 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 		sqrs = ()
 		for col in range(0, width):
 			z = col/sx + xl + 1j*( yt - row/sy)
-			exec(compiled)	
+			try:
+				exec(compiled)
+			except (OverflowError, ValueError):
+				w = 0.0
 			arg = math.atan2(w.imag, w.real)
 			if arg<0.0:
 				arg = arg + 2*math.pi
