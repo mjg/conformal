@@ -123,7 +123,7 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 	pdb.plug_in_vinvert(image,drawables[2])
 	if image.parasite_find("gimp-comment"):
 		image.parasite.detach("gimp-comment")
-	image.attach_new_parasite("gimp-comment", 0, """# conformal %s
+	image.attach_new_parasite("gimp-comment", PARASITE_PERSISTENT, """# conformal %s
 code = \"\"\"%s
 \"\"\"
 xl = %f
