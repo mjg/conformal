@@ -72,13 +72,15 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 	w = complex(0.0)
 	z = complex(0.0)
 	cx, cy = 0, 0
+	mp2 = 2.0*math.pi # no need to do this 500*500 times...
 	ml2 = 2.0*math.log(2) # no need to do this 500*500 times...
+	ml = math.log(2) # no need to do this 500*500 times...
 	compiled=compile(code, "compiled code", "exec", 0, 1)
 
 	for row in range(0, height):
-		args = ()
-		mods = ()
-		sqrs = ()
+		args = []
+		mods = []
+		sqrs = []
 		for col in range(0, width):
 			z = col/sx + xl + 1j*( yt - row/sy)
 			try:
@@ -89,22 +91,20 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 				w = 0.0
 
 			try:
-				arg = math.atan2(w.imag, w.real)
+				logw = cmath.log(w)
+				arg = logw.imag
 				if isnan(arg) or isinf(arg):
 					arg = 0.0
 				elif arg < 0.0:
-					arg = arg + 2*math.pi
-			except (OverflowError, ValueError):
-				arg = 0.0
-			args = args + ( arg/(2*math.pi) ,)
-
-			try:
-				mod = ( math.log(w.imag**2+w.real**2)/ml2 ) % 1.0
+					arg = arg + mp2
+				mod = ( logw.real/ml ) % 1.0
 				if isnan(mod) or isinf(mod):
 					mod = 0.0
 			except (OverflowError, ValueError):
+				arg = 0.0
 				mod = 0.0
-			mods = mods + ( mod ,)
+			args.append( arg/mp2 )
+			mods.append ( mod )
 
 			try:
 				sqr = (int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)
@@ -112,7 +112,7 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 					sqr = 0.0
 			except (OverflowError, ValueError):
 				sqr = 0.0
-			sqrs = sqrs + (bpp-1)*( 255*(sqr % 2) ,) + (255, )
+			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
 
 		samples = gimp.gradient_get_custom_samples(gradient, args)
 		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
