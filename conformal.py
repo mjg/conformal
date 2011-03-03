@@ -75,6 +75,13 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 	ml2 = 2.0*math.log(2) # no need to do this 500*500 times...
 	compiled=compile(code, "compiled code", "exec", 0, 1)
 
+	args = [ i/255.0 for i in range(256) ]
+	arggradsamples = list(gimp.gradient_get_custom_samples(gradient, args))
+	modgradsamples = list(gimp.gradient_get_custom_samples("Default", args))
+	for col in range(256):
+		arggradsamples[col] = [ ((int)(255*arggradsamples[col][i]+0.5)) for i in range(bpp)]
+		modgradsamples[col] = [ ((int)(255*modgradsamples[col][i]+0.5)) for i in range(bpp)]
+
 	for row in range(0, height):
 		args = ()
 		mods = ()
@@ -114,13 +121,11 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 				sqr = 0.0
 			sqrs = sqrs + (bpp-1)*( 255*(sqr % 2) ,) + (255, )
 
-		samples = gimp.gradient_get_custom_samples(gradient, args)
-		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
+		top_p = array("B", [ arggradsamples[(int)(255*args[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
 		dest_rgns[0][0:width, row] = top_p.tostring()
 	
-		samples = gimp.gradient_get_custom_samples("Default", mods)
-		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
+		top_p = array("B", [ modgradsamples[(int)(255*mods[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 		dest_rgns[1][0:width, row] = top_p.tostring()
 
 		top_p = array("B", sqrs )
