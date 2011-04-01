@@ -2,7 +2,7 @@ conformal.py
 ============
 :Author: Michael J. Gruber
 :Email:  conformal@drmicha.warpmail.net
-:Revision: 0.2
+:Revision: 0.3
 
 == Introduction
 `conformal.py` is a plugin-in for http://gimp.org[The Gimp] which allows
@@ -41,8 +41,10 @@ submenu of the `File` menu. From the dialogue, you can adjust these parameters:
 	The range of x-values (real parts) which is mapped to the horizontal image axis.
 `y top`, `y bottom`::
 	The range of y-values (imaginary parts) which is mapped to the vertical image axis.
-`grid`::
+`grid spacing`::
 	The spacing of the generated coordinate grid.
+`checker board`::
+	Use a checker board instead of a grid.
 `gradient`::
 	The gradient representing the argument of the complex number.
 
