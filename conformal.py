@@ -50,7 +50,7 @@ def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
 def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
-		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, DARKEN_ONLY_MODE),
+		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, VALUE_MODE),
 		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, 10, DARKEN_ONLY_MODE)]
 	image.disable_undo()
 	l = 1
