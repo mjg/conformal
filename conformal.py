@@ -39,15 +39,15 @@ except ImportError:
 	pass
 
 
-def conformal_batch(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
-	conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename)
+def conformal_batch(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename):
+	conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename)
 
 
-def conformal(width, height, code, xl, xr, yt, yb, grid, gradient):
-	conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, None)
+def conformal(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient):
+	conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, None)
 
 
-def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename):
+def conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, VALUE_MODE),
@@ -132,9 +132,10 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, gradient, filename
 
 	for drawable in drawables:
 		drawable.flush()
-		drawable.update(0,0,width,height)	
-	pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
-	pdb.plug_in_vinvert(image,drawables[2])
+		drawable.update(0,0,width,height)
+	if not checkboard:
+		pdb.plug_in_edge(image,drawables[2], 10, 0, 0) # amount, WRAP, SOBEL
+		pdb.plug_in_vinvert(image,drawables[2])
 	if image.parasite_find("gimp-comment"):
 		image.parasite.detach("gimp-comment")
 	image.attach_new_parasite("gimp-comment", PARASITE_PERSISTENT, """# conformal %s
@@ -146,10 +147,11 @@ xr = %f
 yt = %f
 yb = %f
 grid = %f
+checkboard = %d
 gradient = "%s"
 width = %d
 height = %d
-""" % (confversion, code, xl, xr, yt, yb, grid, gradient, width, height))
+""" % (confversion, code, xl, xr, yt, yb, grid, checkboard, gradient, width, height))
 	if filename is None:
 		image.enable_undo()
 		gimp.Display(image)
@@ -179,7 +181,8 @@ register(
 		(PF_FLOAT, "xr", "x right", 1.0),
 		(PF_FLOAT, "yt", "y top", 1.0),
 		(PF_FLOAT, "yb", "y bottom", -1.0),
-		(PF_FLOAT, "grid", "grid", 1.0),
+		(PF_FLOAT, "grid", "grid spacing", 1.0),
+		(PF_BOOL, "checkboard", "checker board grid", 0),
 		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
 		(PF_FILE, "file", "file", "out.xcf.bz2"),
 	],
@@ -203,7 +206,8 @@ register(
 		(PF_FLOAT, "xr", "x right", 1.0),
 		(PF_FLOAT, "yt", "y top", 1.0),
 		(PF_FLOAT, "yb", "y bottom", -1.0),
-		(PF_FLOAT, "grid", "grid", 1.0),
+		(PF_FLOAT, "grid", "grid spacing", 1.0),
+		(PF_BOOL, "checkboard", "checker board grid", 0),
 		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
 	],
 	[],
