@@ -78,6 +78,8 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 	compiled=compile(code, "compiled code", "exec", 0, 1)
 	compiledconstraint=compile(constraint, "compiled constraint code", "exec", 0, 1)
 
+	dests = [ array("B", "\x00" * width*height*bpp) for i in range(3) ]
+
 	for row in range(0, height):
 		args = []
 		mods = []
@@ -124,20 +126,19 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
 
 		samples = gimp.gradient_get_custom_samples(gradient, args)
-		top_p = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
+		dests[0][row*width*bpp : (row+1)*width*bpp] = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
 
-		dest_rgns[0][0:width, row] = top_p.tostring()
-	
 		samples = gimp.gradient_get_custom_samples("Default", mods)
-		top_p = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
-		dest_rgns[1][0:width, row] = top_p.tostring()
+		dests[1][row*width*bpp : (row+1)*width*bpp] = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
 
-		top_p = array("B", sqrs )
-		dest_rgns[2][0:width, row] = top_p.tostring()
+		dests[2][row*width*bpp : (row+1)*width*bpp]= array("B", sqrs )
 	
 		progress = progress + width 
 		if filename is None:
 			gimp.progress_update(float(progress) / max_progress)
+
+	for i in range(3):
+		dest_rgns[i][0:width, 0:height] = dests[i].tostring()
 
 	for drawable in drawables:
 		drawable.flush()
