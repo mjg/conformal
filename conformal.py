@@ -120,9 +120,9 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			try:
 				sqr = int(w.imag/grid % 2.0) + int(w.real/grid % 2.0)
 				if isnan(sqr) or isinf(sqr):
-					sqr = 0.0
+					sqr = 0
 			except (OverflowError, ValueError):
-				sqr = 0.0
+				sqr = 0
 			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
 
 		samples = gimp.gradient_get_custom_samples(gradient, args)
