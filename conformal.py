@@ -16,7 +16,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-confversion = "0.3"
+confversion = "0.3+"
 
 # allow access through module and without
 import math, cmath
@@ -39,15 +39,15 @@ except ImportError:
 	pass
 
 
-def conformal_batch(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename):
-	conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename)
+def conformal_batch(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename):
+	conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename)
 
 
-def conformal(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient):
-	conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, None)
+def conformal(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient):
+	conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, None)
 
 
-def conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradient, filename):
+def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename):
 	image = gimp.Image(width, height, RGB) 
 	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
 		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, VALUE_MODE),
@@ -76,6 +76,7 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradie
 	ml2 = 2.0*math.log(2) # no need to do this 500*500 times...
 	ml = math.log(2) # no need to do this 500*500 times...
 	compiled=compile(code, "compiled code", "exec", 0, 1)
+	compiledconstraint=compile(constraint, "compiled constraint code", "exec", 0, 1)
 
 	for row in range(0, height):
 		args = []
@@ -83,10 +84,18 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradie
 		sqrs = []
 		for col in range(0, width):
 			z = col/sx + xl + 1j*( yt - row/sy)
+			p = True
 			try:
-				exec(compiled)
+				exec(compiledconstraint)
 			except (OverflowError, ValueError):
+				p = False
+			if not p:
 				w = 0.0
+			else:
+				try:
+					exec(compiled)
+				except (OverflowError, ValueError):
+					w = 0.0
 			if isnan(w) or isinf(w):
 				w = 0.0
 
@@ -142,6 +151,9 @@ def conformal_core(width, height, code, xl, xr, yt, yb, grid, checkboard, gradie
 code = \"\"\"
 %s
 \"\"\"
+constraint = \"\"\"
+%s
+\"\"\"
 xl = %f
 xr = %f
 yt = %f
@@ -151,7 +163,7 @@ checkboard = %d
 gradient = "%s"
 width = %d
 height = %d
-""" % (confversion, code, xl, xr, yt, yb, grid, checkboard, gradient, width, height))
+""" % (confversion, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, width, height))
 	if filename is None:
 		image.enable_undo()
 		gimp.Display(image)
@@ -177,6 +189,7 @@ register(
 		(PF_INT, "width", "width", 512),
 		(PF_INT, "height", "height", 512),
 		(PF_TEXT, "code", "code", "w=z"),
+		(PF_TEXT, "constraint", "constraint", "p=True"),
 		(PF_FLOAT, "xl", "x left", -1.0),
 		(PF_FLOAT, "xr", "x right", 1.0),
 		(PF_FLOAT, "yt", "y top", 1.0),
@@ -195,13 +208,14 @@ register(
 	"Colour representation of a conformal map",
 	"Michael J Gruber",
 	"Michael J Gruber",
-	"2011",
+	"2012",
 	"<Toolbox>/File/Create/_Conformal ...",
 	"",
 	[
 		(PF_INT, "width", "width", 512),
 		(PF_INT, "height", "height", 512),
 		(PF_TEXT, "code", "code", "w=z"),
+		(PF_TEXT, "constraint", "constraint", "p=True"),
 		(PF_FLOAT, "xl", "x left", -1.0),
 		(PF_FLOAT, "xr", "x right", 1.0),
 		(PF_FLOAT, "yt", "y top", 1.0),
