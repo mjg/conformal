@@ -80,6 +80,14 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 
 	dests = [ array("B", "\x00" * width*height*bpp) for i in range(3) ]
 
+	QUANT = 4096
+	args = [ i/(QUANT-1.0) for i in range(QUANT) ]
+	arggradsamples = list(gimp.gradient_get_custom_samples(gradient, args))
+	modgradsamples = list(gimp.gradient_get_custom_samples("Default", args))
+	for col in range(QUANT):
+		arggradsamples[col] = [ ((int)(255*arggradsamples[col][i]+0.5)) for i in range(bpp)]
+		modgradsamples[col] = [ ((int)(255*modgradsamples[col][i]+0.5)) for i in range(bpp)]
+
 	for row in range(0, height):
 		args = []
 		mods = []
@@ -125,11 +133,9 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 				sqr = 0
 			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
 
-		samples = gimp.gradient_get_custom_samples(gradient, args)
-		dests[0][row*width*bpp : (row+1)*width*bpp] = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
+		dests[0][row*width*bpp : (row+1)*width*bpp] = array("B", [ arggradsamples [int((QUANT-1)*args[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
-		samples = gimp.gradient_get_custom_samples("Default", mods)
-		dests[1][row*width*bpp : (row+1)*width*bpp] = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
+		dests[1][row*width*bpp : (row+1)*width*bpp] = array("B", [ modgradsamples[int((QUANT-1)*mods[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
 		dests[2][row*width*bpp : (row+1)*width*bpp]= array("B", sqrs )
 	
