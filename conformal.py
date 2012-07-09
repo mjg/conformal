@@ -98,7 +98,7 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 					exec(compiled)
 				except (OverflowError, ValueError):
 					w = 0.0
-			if isnan(w) or isinf(w):
+			if not p or isnan(w) or isinf(w):
 				w = 0.0
 
 			try:
