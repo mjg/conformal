@@ -116,7 +116,7 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			mods.append ( mod )
 
 			try:
-				sqr = (int)(w.imag/grid % 2.0) + (int)(w.real/grid % 2.0)
+				sqr = int(w.imag/grid % 2.0) + int(w.real/grid % 2.0)
 				if isnan(sqr) or isinf(sqr):
 					sqr = 0.0
 			except (OverflowError, ValueError):
@@ -124,12 +124,12 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
 
 		samples = gimp.gradient_get_custom_samples(gradient, args)
-		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
+		top_p = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
 
 		dest_rgns[0][0:width, row] = top_p.tostring()
 	
 		samples = gimp.gradient_get_custom_samples("Default", mods)
-		top_p = array("B", [ ((int)(255*samples[col][i]+0.5)) for col in range(0, width) for i in range(bpp) ] )
+		top_p = array("B", [ int(255*samples[col][i]+0.5) for col in range(0, width) for i in range(bpp) ] )
 		dest_rgns[1][0:width, row] = top_p.tostring()
 
 		top_p = array("B", sqrs )
