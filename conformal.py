@@ -88,10 +88,11 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 		arggradsamples[col] = [ ((int)(255*arggradsamples[col][i]+0.5)) for i in range(bpp)]
 		modgradsamples[col] = [ ((int)(255*modgradsamples[col][i]+0.5)) for i in range(bpp)]
 
+	args = [0.0,] * width
+	mods = [0.0,] * width
+	sqrs = [0,] * width
+
 	for row in range(0, height):
-		args = []
-		mods = []
-		sqrs = []
 		for col in range(0, width):
 			z = col/sx + xl + 1j*( yt - row/sy)
 			p = True
@@ -122,8 +123,10 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			except (OverflowError, ValueError):
 				arg = 0.0
 				mod = 0.0
-			args.append( arg/mp2 )
-			mods.append ( mod )
+			arg = arg/mp2
+
+			args[col] = arg
+			mods[col] = mod
 
 			try:
 				sqr = int(w.imag/grid % 2.0) + int(w.real/grid % 2.0)
@@ -131,13 +134,13 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 					sqr = 0
 			except (OverflowError, ValueError):
 				sqr = 0
-			sqrs.extend( (bpp-1)*[ 255*(sqr % 2) ,] + [255, ] )
+			sqrs[col] = sqr % 2
 
 		dests[0][row*width*bpp : (row+1)*width*bpp] = array("B", [ arggradsamples [int((QUANT-1)*args[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
 		dests[1][row*width*bpp : (row+1)*width*bpp] = array("B", [ modgradsamples[int((QUANT-1)*mods[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
-		dests[2][row*width*bpp : (row+1)*width*bpp]= array("B", sqrs )
+		dests[2][row*width*bpp : (row+1)*width*bpp]= array("B", [ sqrsamples[sqrs[col]][i] for col in range(0,width) for i in range(bpp) ] )
 	
 		progress = progress + width 
 		if filename is None:
