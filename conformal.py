@@ -82,11 +82,13 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 
 	QUANT = 4096
 	args = [ i/(QUANT-1.0) for i in range(QUANT) ]
-	arggradsamples = list(gimp.gradient_get_custom_samples(gradient, args))
-	modgradsamples = list(gimp.gradient_get_custom_samples("Default", args))
-	for col in range(QUANT):
+	arggradsamples = list(gimp.gradient_get_custom_samples(gradient, args)) + [[0,]*bpp]
+	modgradsamples = list(gimp.gradient_get_custom_samples("Default", args)) + [[0,]*bpp]
+	sqrsamples = [ [0,]*(bpp-1) + [255,], [255,]*(bpp-1) + [255,] , [0,]*bpp ]
+	for col in range(QUANT+1):
 		arggradsamples[col] = [ ((int)(255*arggradsamples[col][i]+0.5)) for i in range(bpp)]
 		modgradsamples[col] = [ ((int)(255*modgradsamples[col][i]+0.5)) for i in range(bpp)]
+	qinf = 1.0 + 1.0/(QUANT-1) # uggely uggely
 
 	args = [0.0,] * width
 	mods = [0.0,] * width
@@ -125,16 +127,23 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 				mod = 0.0
 			arg = arg/mp2
 
-			args[col] = arg
-			mods[col] = mod
-
 			try:
 				sqr = int(w.imag/grid % 2.0) + int(w.real/grid % 2.0)
 				if isnan(sqr) or isinf(sqr):
 					sqr = 0
 			except (OverflowError, ValueError):
 				sqr = 0
-			sqrs[col] = sqr % 2
+
+			sqr = sqr % 2
+
+			if not p:
+				arg = qinf
+				mod = qinf
+				sqr = 2
+
+			args[col] = arg
+			mods[col] = mod
+			sqrs[col] = sqr
 
 		dests[0][row*width*bpp : (row+1)*width*bpp] = array("B", [ arggradsamples [int((QUANT-1)*args[col]+0.5)][i] for col in range(0, width) for i in range(bpp) ] )
 
