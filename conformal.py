@@ -108,7 +108,7 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 				try:
 					exec(compiled)
 				except (OverflowError, ValueError):
-					w = 0.0
+					p = False
 			if not p or isnan(w) or isinf(w):
 				w = 0.0
 
@@ -117,22 +117,27 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 				arg = logw.imag
 				if isnan(arg) or isinf(arg):
 					arg = 0.0
+					p = False
 				elif arg < 0.0:
 					arg = arg + mp2
 				mod = ( logw.real/ml ) % 1.0
 				if isnan(mod) or isinf(mod):
 					mod = 0.0
+					p = False
 			except (OverflowError, ValueError):
 				arg = 0.0
 				mod = 0.0
+				p = False
 			arg = arg/mp2
 
 			try:
 				sqr = int(w.imag/grid % 2.0) + int(w.real/grid % 2.0)
 				if isnan(sqr) or isinf(sqr):
 					sqr = 0
+					p = False
 			except (OverflowError, ValueError):
 				sqr = 0
+				p = False
 
 			sqr = sqr % 2
 
