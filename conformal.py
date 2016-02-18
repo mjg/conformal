@@ -39,19 +39,19 @@ except ImportError:
 	pass
 
 
-def conformal_batch(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename):
-	conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename)
+def conformal_batch(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename, arg_opacity, mod_opacity, grid_opacity):
+	conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename, arg_opacity, mod_opacity, grid_opacity)
 
 
 def conformal(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient):
 	conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, None)
 
 
-def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename):
+def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkboard, gradient, filename, arg_opacity=100, mod_opacity=35, grid_opacity=10):
 	image = gimp.Image(width, height, RGB) 
-	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, 100, NORMAL_MODE),
-		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, 35, VALUE_MODE),
-		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, 10, DARKEN_ONLY_MODE)]
+	drawables = [ gimp.Layer(image, "Argument", width, height, RGBA_IMAGE, arg_opacity, NORMAL_MODE),
+		      gimp.Layer(image, "Log. modulus", width, height, RGBA_IMAGE, mod_opacity, VALUE_MODE),
+		      gimp.Layer(image, "Grid", width, height, RGBA_IMAGE, grid_opacity, DARKEN_ONLY_MODE)]
 	image.disable_undo()
 	l = 1
 	for drawable in drawables:
@@ -222,6 +222,9 @@ register(
 		(PF_BOOL, "checkboard", "checker board grid", 0),
 		(PF_GRADIENT, "gradient", "gradient", "Full saturation spectrum CCW"),
 		(PF_FILE, "file", "file", "out.xcf.bz2"),
+		(PF_FLOAT, "arg_opacity", "argument layer opacity", 100),
+		(PF_FLOAT, "mod_opacity", "modulus layer opacity", 35),
+		(PF_FLOAT, "grid_opacity", "grid layer opacity", 10),
 	],
 	[],
 	conformal_batch)
