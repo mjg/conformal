@@ -29,6 +29,10 @@ from gimpfu import *
 # try importing typical math modules
 try:
 	from fpconst import *
+except ImportError:
+	pass
+
+try:
 	import scipy.special
 except ImportError:
 	pass
