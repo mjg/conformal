@@ -104,14 +104,14 @@ def conformal_core(width, height, code, constraint, xl, xr, yt, yb, grid, checkb
 			p = True
 			try:
 				exec(compiledconstraint)
-			except (OverflowError, ValueError):
+			except (OverflowError, ValueError, ZeroDivisionError):
 				p = False
 			if not p:
 				w = 0.0
 			else:
 				try:
 					exec(compiled)
-				except (OverflowError, ValueError):
+				except (OverflowError, ValueError, ZeroDivisionError):
 					p = False
 			if not p or isnan(w) or isinf(w):
 				w = 0.0
