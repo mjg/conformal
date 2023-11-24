@@ -28,7 +28,7 @@ from gimpfu import *
 
 # try importing typical math modules
 try:
-	from fpconst import *
+	import fpconst
 except ImportError:
 	pass
 
