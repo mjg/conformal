@@ -1,7 +1,7 @@
 conformal.py
 ============
 :Author: Michael J. Gruber
-:Email:  conformal@drmicha.warpmail.net
+:Email:  github@grubix.eu
 :Revision: 0.3
 
 == Introduction

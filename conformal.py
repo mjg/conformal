@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #   conformal.py
-#   Copyright (C) 2006-2011  Michael J. Gruber <conformal@drmicha.warpmail.net>
+#   Copyright (C) 2006-2023  Michael J. Gruber <github@grubix.eu>
 #
 #    This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
